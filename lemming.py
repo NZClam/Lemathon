@@ -1,5 +1,4 @@
-import pygame, sys, time
-from pygame.locals import *
+import pygame
 
 # set up pygame
 pygame.init()
@@ -11,53 +10,53 @@ WINDOWHEIGHT = 480
 windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0, 32)
 pygame.display.set_caption('Lemathon')
 
-# set up the colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
+# Define Lemming class
+class Lemming():
+    def __init__(self, xpos, ypos):
+
+        self.char = pygame.Rect(xpos, ypos, 10, 10)
+        self.action = 'Faller'  # By convention, lemmings fall from hatches
+        self.frame = 0
+        self.numframes = len(SPRITES[self.action])
+        self.xspeed = 0
+        self.yspeed = 3
+
 
 # read from sprite sheet
 SPRITESHEET = pygame.image.load('sprites_amiga.png').convert()
 
-# select a single sprite
-def readSprite(x, y, width, height, sheet=SPRITESHEET):
+# read a single sprite from the sheet
+def read_sprite(x, y, width, height, sheet):
+    # define a rectangular area on the sheet
     rect = pygame.Rect(x, y, width, height)
+    # create a Surface to store the image
     image = pygame.Surface(rect.size).convert()
+    # copy image from selected are of spreadsheet onto the image surface
     image.blit(sheet, (0,0), rect)
     return image
 
-# load sprites
-SPRITES = {'Walker':[]}
-i = 1
-x = 18
-y = 0
-while(i <= 8):
-    SPRITES['Walker'].append(readSprite(x, y, 10, 10))
-    i += 1
-    x += 16
 
-# spawn a lemming
-char = pygame.Rect(200, 100, 10, 10)
-action = 'Walker'
+# read a row of sprites from the sheet
+def read_sprite_row(actionname, xstart, ystart, spritewidth, spriteheight, ncols, nrows, spritesdict):
+    # initialise dictionary ref
+    spritesdict[actionname] = []
+    x = xstart
+    y = ystart
+    for row in range(nrows):
+        for col in range(ncols):
+            # read sprite and load into dict
+            spritesdict[actionname].append(read_sprite(x, y, spritewidth, spriteheight, SPRITESHEET))
+            # move across to next sprite
+            x += spritewidth
+            # if at end of row, move down to start of next row
+            if col == ncols - 1:
+                x = xstart
+                y += spriteheight
 
-# frame id for walker loop
-frame = 0
 
-# run the game loop
-while True:
-    # check for the QUIT event
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-
-    # draw the black background onto the surface
-    windowSurface.fill(BLACK)
-
-    # draw the lemming onto the surface
-    frame = (frame + 1) % 8
-    char.left += 1
-    windowSurface.blit(SPRITES[action][frame], char)
-
-    # draw the window onto the screen
-    pygame.display.update()
-    mainClock.tick(15)
+# Load the sprites into sprites dictionary
+SPRITES = {}  # initialise
+read_sprite_row('Walker', 15, 0, 16, 10, 8, 1, SPRITES)
+read_sprite_row('Faller', 11, 20, 16, 10, 4, 1, SPRITES)
+#...
+read_sprite_row('Shrugger', 17, 224, 16, 10, 8, 1, SPRITES)
