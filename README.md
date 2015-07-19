@@ -1,4 +1,5 @@
-# Lemathon
-Lemmings clone in Python/Pygame
+LEMATHON \o/
 
-Just starting out - nothing much to see yet!
+Lemmings clone in Python/Pygame.
+
+Just a wacky animation for now.

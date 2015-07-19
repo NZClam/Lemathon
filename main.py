@@ -24,15 +24,9 @@ while True:
 
 
     # spawn lemmings at regular intervals
-    if elapsed_time == 0:
-        lemmings.append(lemming.Lemming(450,50, scale=4, permanentskills=['Floater']))
-        lemmings.append(lemming.Lemming(550,100, scale=4, inverted=1))
-        lemmings.append(lemming.Lemming(50,250, scale=4, reversed=1))
-        lemmings.append(lemming.Lemming(150,150, scale=4, reversed=1, inverted=1))
-        lemmings.append(lemming.Lemming(250,50, scale=4, reversed=1, rotated=1))
-        lemmings.append(lemming.Lemming(350,100, scale=4, reversed=1, inverted=1, rotated=1))
-        lemmings.append(lemming.Lemming(250,350, scale=4, rotated=1))
-        lemmings.append(lemming.Lemming(350,400, scale=4, inverted=1, rotated=1))
+    if elapsed_time % 20 == 0:
+        lemmings.append(lemming.Lemming(250,250, scale=4, permanentskills=['Floater']))
+
 
     # draw the black background onto the surface
     windowSurface.fill(BLACK)

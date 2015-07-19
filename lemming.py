@@ -22,6 +22,8 @@ class Lemming():
         # Permanent skills, counters
         self.permanentskills = permanentskills
         self.cumfalldist = 0  # fall distance tracker
+        self.assignable = True
+        self.removed = False
 
         # ORIENTATION
         # Convention to represent orientation with three flags:
@@ -62,18 +64,22 @@ class Lemming():
     # move by one frame
     def move(self):
 
-        # advance animation frame
-        # change action if needed
-        if self.action == 'Faller' and 'Floater' in self.permanentskills and self.cumfalldist >= 24:
-            self.action = 'Floater'
-            self.frame=0
-        elif self.action == 'Floater' and self.frame == 3:
-            self.action = 'Floater2'
-            self.frame=0
-        # otherwise advance frame within same action
+        # skip if already removed
+        if self.removed: return None
+
+        # Do removal from level when ending death or exiting animation, or leaving level boundary
+        if self.remove(): return None
+
+        # Do change of action resulting from skill assignment
+
+        # Do automatic change of action when ending an animation that doesn't loop (eg. shrugger -> walker)
+        if self.auto_change_action(): pass
+
+        # If not changing action, advance one frame within same action
         else:
             self.frame = (self.frame + 1) % self.numframes
 
+        # update sprite
         self.sprite = self.getSprite()
 
         # if faller, increment fall distance
@@ -110,6 +116,46 @@ class Lemming():
         self.char.left += dx
         self.char.top += dy
 
+
+    # change action
+    def change_action(self, new_action):
+        self.action = new_action
+        self.frame = 0
+
+    def auto_change_action(self):
+        # Faller -> Floater start (opening umbrella)
+        if self.action == 'Faller' and 'Floater' in self.permanentskills and self.cumfalldist >= 24:
+            self.change_action('FloaterStart')
+
+        # Floater start -> Floater
+        elif self.action == 'FloaterStart' and self.frame == len(DELTAS['FloaterStart']) - 1:
+            self.change_action('Floater')
+
+        # Ohnoer -> Exploder
+        elif self.action == 'Ohnoer' and self.frame == len(DELTAS['Ohnoer']) - 1:
+            self.change_action('Exploder')
+
+        # Hoister -> Walker
+        elif self.action == 'Hoister' and self.frame == len(DELTAS['Hoister']) - 1:
+            self.change_action('Walker')
+            self.char.left -= self.scale
+            self.char.top += 2*self.scale
+
+        # Shrugger -> Walker
+        elif self.action == 'Shrugger' and self.frame == len(DELTAS['Shrugger']) - 1:
+            self.change_action('Walker')
+
+        # Return True if action changed, otherwise return False
+        else: return False
+        return True
+
+    def remove(self):
+        if self.action in ['Exiter', 'Splatter', 'Drowner', 'Burner', 'Exploder'] and self.frame == len(DELTAS[self.action]) - 1:
+            self.removed = True
+
+        else: return False
+        return True
+
     # get facing direction
     def get_facing(self):
         if self.reversed:
@@ -122,7 +168,7 @@ class Lemming():
 
     # draw to screen
     def draw(self):
-        windowSurface.blit(self.sprite, self.char)
+        if not self.removed: windowSurface.blit(self.sprite, self.char)
 
 
 
@@ -165,9 +211,9 @@ read_sprite_row(SPRITES, 'Shrugger', 180,  0,   7)
 read_sprite_row(SPRITES, 'Shrugger',   0,  20,  1)
 read_sprite_row(SPRITES, 'Exiter',    20,  20,  8)
 read_sprite_row(SPRITES, 'Faller',     0,  40,  4)
-read_sprite_row(SPRITES, 'Floater',  80,  40,  4)
-read_sprite_row(SPRITES, 'Floater2', 160,  40,  4)
-read_sprite_row(SPRITES, 'Floater2', 220,  40,  4, spritespace=-20)
+read_sprite_row(SPRITES, 'FloaterStart',  80,  40,  4)
+read_sprite_row(SPRITES, 'Floater', 160,  40,  4)
+read_sprite_row(SPRITES, 'Floater', 220,  40,  4, spritespace=-20)
 read_sprite_row(SPRITES, 'Blocker',    0,  60, 16)
 read_sprite_row(SPRITES, 'Climber',    0,  80,  8)
 read_sprite_row(SPRITES, 'Hoister',  160,  80,  8)
@@ -204,6 +250,6 @@ DELTAS['Miner'][3] = (2,2)
 DELTAS['Miner'][15] = (2,0)
 DELTAS['Builder'][0] = (2,-1)
 for i in list(range(4,8)): DELTAS['Climber'][i] = (0,-1)
-DELTAS['Floater'] = [(0,0), (0,3), (0,0), (0,0)]
-DELTAS['Floater2'] = [(0,2)] * len(SPRITES['Floater2'])
-for i in list(range(1,5)): DELTAS['Hoister'][i] = (0,-2)
+DELTAS['FloaterStart'] = [(0,0), (0,3), (0,0), (0,0)]
+DELTAS['Floater'] = [(0,2)] * len(SPRITES['Floater'])
+for i in [1,2,3,4]: DELTAS['Hoister'][i] = (0,-2)
