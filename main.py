@@ -1,4 +1,4 @@
-import pygame, sys, lemming
+import pygame, sys, lemming, hotkey
 from pygame.locals import *
 from lemming import mainClock, windowSurface
 
@@ -22,11 +22,24 @@ while True:
             pygame.quit()
             sys.exit()
 
+        elif event.type == KEYDOWN:
+            new_skill = hotkey.get_hotkey_skill(event.key)
+            if new_skill:
+                for i in range(len(lemmings)):
+                    lemmings[i].change_action(new_skill)
 
-    # spawn lemmings at regular intervals
-    if elapsed_time % 20 == 0:
-        lemmings.append(lemming.Lemming(250,250, scale=4, permanentskills=['Floater']))
+            elif event.key == K_r:
+                lemmings.append(lemming.Lemming(100,100, scale=4))
+                lemmings.append(lemming.Lemming(200,100, scale=2, inverted=1))
+                lemmings.append(lemming.Lemming(300,100, scale=1, rotated=1))
 
+    pygame.event.clear()
+
+    # spawn lemming at regular intervals
+    if elapsed_time == 0:
+        lemmings.append(lemming.Lemming(100,100, scale=4))
+        lemmings.append(lemming.Lemming(200,100, scale=2, inverted=1))
+        lemmings.append(lemming.Lemming(300,100, scale=1, rotated=1))
 
     # draw the black background onto the surface
     windowSurface.fill(BLACK)

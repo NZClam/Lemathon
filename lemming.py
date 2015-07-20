@@ -120,6 +120,7 @@ class Lemming():
     # change action
     def change_action(self, new_action):
         self.action = new_action
+        self.numframes = len(SPRITES[self.action])  # length of animation loop for current action
         self.frame = 0
 
     def auto_change_action(self):
