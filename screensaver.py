@@ -3,13 +3,17 @@ import lemming, hotkey
 from pygame.locals import *
 from lemming import mainClock, windowSurface, WINDOWWIDTH, WINDOWHEIGHT
 
-# constants
-FPS = 15  # frames per second
-
-# colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-
+# function to spawn a random lemming
+def get_random_lemming():
+    randx = random.randint(0,WINDOWWIDTH)
+    randy = random.randint(0,WINDOWHEIGHT)
+    randscale = random.randint(1,4)
+    randreversed = random.randint(0,1)
+    randinverted = random.randint(0,1)
+    randrotated = random.randint(0,1)
+    skills=list(lemming.SPRITES.keys())
+    randaction = random.choice(skills)
+    return lemming.Lemming(randx,randy,randscale,randreversed,randinverted,randrotated,randaction)
 
 # initialise emtpy lemmings list and level vars
 lemmings = []
@@ -29,14 +33,17 @@ while True:
                 for i in range(len(lemmings)):
                     lemmings[i].change_action(new_skill)
 
+            elif event.key == K_r:
+                lemmings.append(get_random_lemming())
+
     pygame.event.clear()
 
     # spawn lemming at regular intervals
     if elapsed_time % 15 == 0:
-        lemmings.append(lemming.Lemming(100,100,scale=2))
+        lemmings.append(get_random_lemming())
 
     # draw the black background onto the surface
-    windowSurface.fill(BLACK)
+    windowSurface.fill((0,0,0))
 
     for i in range(len(lemmings)):
         # move the lemmings
@@ -50,4 +57,4 @@ while True:
 
     # draw the window onto the screen
     pygame.display.update()
-    mainClock.tick(FPS)
+    mainClock.tick(15)

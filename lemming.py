@@ -13,11 +13,12 @@ pygame.display.set_caption('Lemathon')
 
 # Define Lemming class
 class Lemming():
-    def __init__(self, xpos, ypos, scale=2, reversed=False, inverted=False, rotated=False, permanentskills=[]):
+    def __init__(self, xpos, ypos, scale=2, reversed=False, inverted=False, rotated=False, action='Faller', permanentskills=[]):
         # Skill action - by convention, lemmings start as Fallers but advance one frame (and state) before drawn
-        self.action = 'Faller'
+        self.action = action
         self.numframes = len(SPRITES[self.action])  # length of animation loop for current action
-        self.frame = 0  # place in the animation loop
+        # Place in the animation loop. Animations start from 0 but lemmings advance one frame before first drawn.
+        self.frame = -1
 
         # Permanent skills, counters
         self.permanentskills = permanentskills
@@ -234,6 +235,8 @@ read_sprite_row(SPRITES, 'Splatter',   0, 220, 16)
 read_sprite_row(SPRITES, 'Drowner',    0, 240, 16)
 read_sprite_row(SPRITES, 'Burner',     0, 260, 13)
 read_sprite_row(SPRITES, 'Exploder', 260, 260,  1)
+
+print(SPRITES.keys())
 
 # Set deltas (dx, dy) per frame for each action
 # Blank with the same length as sprites
