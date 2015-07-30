@@ -1,8 +1,14 @@
-# Hotkeys
-
 import pygame
 from pygame.locals import *
 
+# set up the window
+WINDOWWIDTH = 640
+WINDOWHEIGHT = 480
+
+# constants
+FPS = 15  # frames per second
+
+# Hotkeys
 def get_hotkey_skill(key):
     for skill, hotkey in hotkeys_skills:
         if hotkey == key:

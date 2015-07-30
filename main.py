@@ -1,18 +1,12 @@
 import pygame, sys, random
-import lemming, hotkey
+import lemming, config
 from pygame.locals import *
-from lemming import mainClock, windowSurface, WINDOWWIDTH, WINDOWHEIGHT
-
-# constants
-FPS = 15  # frames per second
-
-# colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-
+from config import WINDOWWIDTH, WINDOWHEIGHT, FPS
+from init import windowSurface
 
 # initialise emtpy lemmings list and level vars
 lemmings = []
+mainClock = pygame.time.Clock()
 elapsed_time = 0
 
 # run the game loop
@@ -24,7 +18,7 @@ while True:
             sys.exit()
 
         elif event.type == KEYDOWN:
-            new_skill = hotkey.get_hotkey_skill(event.key)
+            new_skill = config.get_hotkey_skill(event.key)
             if new_skill:
                 for i in range(len(lemmings)):
                     lemmings[i].change_action(new_skill)
@@ -36,7 +30,7 @@ while True:
         lemmings.append(lemming.Lemming(100,100,scale=2))
 
     # draw the black background onto the surface
-    windowSurface.fill(BLACK)
+    windowSurface.fill(0)
 
     for i in range(len(lemmings)):
         # move the lemmings
